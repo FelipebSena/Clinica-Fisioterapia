@@ -1,3 +1,9 @@
+
+
+==============================================================================
+-- ETAPA 1 — CRIAÇÃO DO BANCO E ESTRUTURA (antigo 01_ddl.sql)
+==============================================================================
+
 -- ============================================================
 -- 01_ddl.sql
 -- Projeto Final — Laboratório de Banco de Dados
@@ -35,7 +41,6 @@ CREATE TABLE paciente (
 
     CONSTRAINT pk_paciente PRIMARY KEY (id_paciente),
     CONSTRAINT uq_paciente_cpf UNIQUE (cpf),
-    CONSTRAINT ck_paciente_data_nascimento CHECK (data_nascimento <= CURRENT_DATE),
     CONSTRAINT fk_paciente_convenio
         FOREIGN KEY (id_convenio)
         REFERENCES convenio (id_convenio)
@@ -86,7 +91,7 @@ CREATE TABLE estagiario (
         ON UPDATE CASCADE,
     CONSTRAINT fk_estagiario_supervisor
         FOREIGN KEY (id_supervisor)
-        REFERENCES profissional (id_profissional)
+        REFERENCES fisioterapeuta (id_profissional)
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
     CONSTRAINT ck_estagiario_nao_supervisiona_a_si_mesmo
@@ -131,8 +136,12 @@ CREATE TABLE tratamento (
     id_paciente INT UNSIGNED NOT NULL,
     id_fisioterapeuta INT UNSIGNED NOT NULL,
     id_especialidade INT UNSIGNED NOT NULL,
+    id_especialidade_em_andamento INT UNSIGNED
+        GENERATED ALWAYS AS (CASE WHEN data_alta IS NULL THEN id_especialidade ELSE NULL END) STORED,
 
     CONSTRAINT pk_tratamento PRIMARY KEY (id_tratamento),
+    CONSTRAINT uq_tratamento_paciente_especialidade_aberto
+        UNIQUE (id_paciente, id_especialidade_em_andamento),
     CONSTRAINT fk_tratamento_paciente
         FOREIGN KEY (id_paciente)
         REFERENCES paciente (id_paciente)
@@ -269,34 +278,70 @@ CREATE INDEX idx_avaliacao_paciente ON avaliacao_fisica (id_paciente);
 CREATE INDEX idx_habilitacao_especialidade ON habilitacao_profissional (id_especialidade);
 CREATE INDEX idx_aplicacao_exercicio ON aplicacao_exercicio (id_exercicio);
 
--- RN07: o supervisor precisa ser um fisioterapeuta.
+-- RN02: MySQL não permite CURRENT_DATE em uma expressão CHECK.
+-- A regra é validada por gatilhos de INSERT e UPDATE.
 DELIMITER $$
 
-CREATE TRIGGER ck_supervisor_fisioterapeuta_ins
-BEFORE INSERT ON estagiario
+CREATE TRIGGER ck_paciente_data_nascimento_ins
+BEFORE INSERT ON paciente
 FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM fisioterapeuta
-        WHERE id_profissional = NEW.id_supervisor
-    ) THEN
+    IF NEW.data_nascimento > CURRENT_DATE() THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'O supervisor do estagiario deve ser um fisioterapeuta.';
+            SET MESSAGE_TEXT = 'A data de nascimento nao pode ser futura.';
     END IF;
 END$$
 
-CREATE TRIGGER ck_supervisor_fisioterapeuta_upd
+CREATE TRIGGER ck_paciente_data_nascimento_upd
+BEFORE UPDATE ON paciente
+FOR EACH ROW
+BEGIN
+    IF NEW.data_nascimento > CURRENT_DATE() THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'A data de nascimento nao pode ser futura.';
+    END IF;
+END$$
+
+-- RN05: impede que o mesmo profissional seja cadastrado nos dois subtipos.
+-- A totalidade (todo profissional precisa pertencer a um subtipo) requer
+-- alinhamento com o modelo lógico e não é garantida apenas por estas tabelas.
+CREATE TRIGGER ck_profissional_exclusivo_fisio_ins
+BEFORE INSERT ON fisioterapeuta
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM estagiario WHERE id_profissional = NEW.id_profissional) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'O profissional ja esta cadastrado como estagiario.';
+    END IF;
+END$$
+
+CREATE TRIGGER ck_profissional_exclusivo_fisio_upd
+BEFORE UPDATE ON fisioterapeuta
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM estagiario WHERE id_profissional = NEW.id_profissional) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'O profissional ja esta cadastrado como estagiario.';
+    END IF;
+END$$
+
+CREATE TRIGGER ck_profissional_exclusivo_estagiario_ins
+BEFORE INSERT ON estagiario
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM fisioterapeuta WHERE id_profissional = NEW.id_profissional) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'O profissional ja esta cadastrado como fisioterapeuta.';
+    END IF;
+END$$
+
+CREATE TRIGGER ck_profissional_exclusivo_estagiario_upd
 BEFORE UPDATE ON estagiario
 FOR EACH ROW
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM fisioterapeuta
-        WHERE id_profissional = NEW.id_supervisor
-    ) THEN
+    IF EXISTS (SELECT 1 FROM fisioterapeuta WHERE id_profissional = NEW.id_profissional) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'O supervisor do estagiario deve ser um fisioterapeuta.';
+            SET MESSAGE_TEXT = 'O profissional ja esta cadastrado como fisioterapeuta.';
     END IF;
 END$$
 
@@ -333,7 +378,28 @@ BEGIN
     END IF;
 END$$
 
+-- RN19: uma sessão com evolução não pode deixar de estar REALIZADA.
+CREATE TRIGGER ck_sessao_evolucao_status_upd
+BEFORE UPDATE ON sessao
+FOR EACH ROW
+BEGIN
+    IF NEW.situacao <> 'REALIZADA'
+       AND EXISTS (
+           SELECT 1 FROM evolucao
+           WHERE id_tratamento = OLD.id_tratamento
+             AND numero_sessao = OLD.numero_sessao
+       ) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Sessao com evolucao registrada deve permanecer REALIZADA.';
+    END IF;
+END$$
+
 DELIMITER ;
+
+
+==============================================================================
+-- ETAPA 1 — CARGA DOS DADOS (antigo 02_Carga.sql)
+==============================================================================
 
 -- ============================================================
 -- 02_carga.sql
@@ -539,40 +605,40 @@ INSERT INTO tratamento (descricao_condicao,data_inicio,data_alta,id_paciente,id_
 ('Reabilitação de ombro', '2026-03-06', '2026-06-07', 3, 3, 3),
 ('Recuperação pós-operatória', '2026-04-08', NULL, 4, 4, 4),
 ('Reabilitação neurológica', '2026-05-10', NULL, 5, 5, 5),
-('Dor cervical', '2026-06-12', '2026-01-13', 6, 6, 6),
-('Entorse de tornozelo', '2026-07-14', '2026-02-15', 7, 7, 7),
+('Dor cervical', '2026-06-12', '2026-08-13', 6, 6, 6),
+('Entorse de tornozelo', '2026-07-14', '2026-09-15', 7, 7, 7),
 ('Reabilitação esportiva', '2026-08-16', NULL, 8, 8, 8),
 ('Dor lombar', '2026-01-18', NULL, 9, 9, 1),
 ('Lesão de joelho', '2026-02-20', '2026-05-21', 10, 10, 2),
 ('Reabilitação de ombro', '2026-03-22', '2026-06-23', 11, 11, 3),
 ('Recuperação pós-operatória', '2026-04-24', NULL, 12, 12, 4),
 ('Reabilitação neurológica', '2026-05-01', NULL, 13, 13, 5),
-('Dor cervical', '2026-06-03', '2026-01-04', 14, 14, 6),
-('Entorse de tornozelo', '2026-07-05', '2026-02-06', 15, 15, 7),
+('Dor cervical', '2026-06-03', '2026-08-04', 14, 14, 6),
+('Entorse de tornozelo', '2026-07-05', '2026-09-06', 15, 15, 7),
 ('Reabilitação esportiva', '2026-08-07', NULL, 16, 16, 8),
 ('Dor lombar', '2026-01-09', NULL, 17, 17, 1),
 ('Lesão de joelho', '2026-02-11', '2026-05-12', 18, 18, 2),
 ('Reabilitação de ombro', '2026-03-13', '2026-06-14', 19, 19, 3),
 ('Recuperação pós-operatória', '2026-04-15', NULL, 20, 20, 4),
 ('Reabilitação neurológica', '2026-05-17', NULL, 21, 1, 5),
-('Dor cervical', '2026-06-19', '2026-01-20', 22, 2, 6),
-('Entorse de tornozelo', '2026-07-21', '2026-02-22', 23, 3, 7),
+('Dor cervical', '2026-06-19', '2026-08-20', 22, 2, 6),
+('Entorse de tornozelo', '2026-07-21', '2026-09-22', 23, 3, 7),
 ('Reabilitação esportiva', '2026-08-23', NULL, 24, 4, 8),
 ('Dor lombar', '2026-01-25', NULL, 25, 5, 1),
 ('Lesão de joelho', '2026-02-02', '2026-05-03', 26, 6, 2),
 ('Reabilitação de ombro', '2026-03-04', '2026-06-05', 27, 7, 3),
 ('Recuperação pós-operatória', '2026-04-06', NULL, 28, 8, 4),
 ('Reabilitação neurológica', '2026-05-08', NULL, 29, 9, 5),
-('Dor cervical', '2026-06-10', '2026-01-11', 30, 10, 6),
-('Entorse de tornozelo', '2026-07-12', '2026-02-13', 31, 11, 7),
+('Dor cervical', '2026-06-10', '2026-08-11', 30, 10, 6),
+('Entorse de tornozelo', '2026-07-12', '2026-09-13', 31, 11, 7),
 ('Reabilitação esportiva', '2026-08-14', NULL, 32, 12, 8),
 ('Dor lombar', '2026-01-16', NULL, 33, 13, 1),
 ('Lesão de joelho', '2026-02-18', '2026-05-19', 34, 14, 2),
 ('Reabilitação de ombro', '2026-03-20', '2026-06-21', 35, 15, 3),
 ('Recuperação pós-operatória', '2026-04-22', NULL, 36, 16, 4),
 ('Reabilitação neurológica', '2026-05-24', NULL, 37, 17, 5),
-('Dor cervical', '2026-06-01', '2026-01-02', 38, 18, 6),
-('Entorse de tornozelo', '2026-07-03', '2026-02-04', 39, 19, 7),
+('Dor cervical', '2026-06-01', '2026-08-02', 38, 18, 6),
+('Entorse de tornozelo', '2026-07-03', '2026-09-04', 39, 19, 7),
 ('Reabilitação esportiva', '2026-08-05', NULL, 40, 20, 8);
 
 INSERT INTO sala (codigo,capacidade) VALUES
@@ -1086,6 +1152,11 @@ UNION ALL SELECT 'EVOLUCAO', COUNT(*) FROM evolucao
 UNION ALL SELECT 'EXERCICIO', COUNT(*) FROM exercicio
 UNION ALL SELECT 'APLICACAO_EXERCICIO', COUNT(*) FROM aplicacao_exercicio
 UNION ALL SELECT 'AVALIACAO_FISICA', COUNT(*) FROM avaliacao_fisica;
+
+
+==============================================================================
+-- ETAPA 1 — CONSULTAS (antigo 03_Consultas.sql)
+==============================================================================
 
 -- ============================================================
 -- 03_consultas.sql
