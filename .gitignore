@@ -1,0 +1,9 @@
+.review/
+build/
+lib/*.jar
+__pycache__/
+*.pyc
+.env
+*.cnf
+backups/
+*.class

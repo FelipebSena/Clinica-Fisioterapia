@@ -1,0 +1,716 @@
+{
+  "aplicacao_exercicio": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_tratamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "numero_sessao",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_exercicio",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "series",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "repeticoes",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "carga",
+        "COLUMN_TYPE": "decimal(8,2)",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `aplicacao_exercicio` (\n  `id_tratamento` int unsigned NOT NULL,\n  `numero_sessao` int unsigned NOT NULL,\n  `id_exercicio` int unsigned NOT NULL,\n  `series` int unsigned NOT NULL,\n  `repeticoes` int unsigned NOT NULL,\n  `carga` decimal(8,2) DEFAULT NULL,\n  PRIMARY KEY (`id_tratamento`,`numero_sessao`,`id_exercicio`),\n  KEY `idx_aplicacao_exercicio` (`id_exercicio`),\n  CONSTRAINT `fk_aplicacao_exercicio` FOREIGN KEY (`id_exercicio`) REFERENCES `exercicio` (`id_exercicio`) ON DELETE RESTRICT ON UPDATE CASCADE,\n  CONSTRAINT `fk_aplicacao_sessao` FOREIGN KEY (`id_tratamento`, `numero_sessao`) REFERENCES `sessao` (`id_tratamento`, `numero_sessao`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `ck_aplicacao_carga` CHECK (((`carga` is null) or (`carga` >= 0))),\n  CONSTRAINT `ck_aplicacao_repeticoes` CHECK ((`repeticoes` > 0)),\n  CONSTRAINT `ck_aplicacao_series` CHECK ((`series` > 0))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "auditoria_evolucao": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_auditoria",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_tratamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "numero_sessao",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "acao",
+        "COLUMN_TYPE": "varchar(10)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "conduta_anterior",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "conduta_nova",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "resposta_anterior",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "resposta_nova",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "usuario_db",
+        "COLUMN_TYPE": "varchar(288)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_hora",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `auditoria_evolucao` (\n  `id_auditoria` int unsigned NOT NULL AUTO_INCREMENT,\n  `id_tratamento` int unsigned NOT NULL,\n  `numero_sessao` int unsigned NOT NULL,\n  `acao` varchar(10) NOT NULL,\n  `conduta_anterior` text,\n  `conduta_nova` text,\n  `resposta_anterior` text,\n  `resposta_nova` text,\n  `usuario_db` varchar(288) NOT NULL,\n  `data_hora` datetime NOT NULL,\n  PRIMARY KEY (`id_auditoria`)\n) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "avaliacao_fisica": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_avaliacao",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_avaliacao",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nivel_dor",
+        "COLUMN_TYPE": "tinyint unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "amplitude_movimento",
+        "COLUMN_TYPE": "varchar(100)",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "observacoes",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_paciente",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `avaliacao_fisica` (\n  `id_avaliacao` int unsigned NOT NULL AUTO_INCREMENT,\n  `data_avaliacao` date NOT NULL,\n  `nivel_dor` tinyint unsigned NOT NULL,\n  `amplitude_movimento` varchar(100) DEFAULT NULL,\n  `observacoes` text,\n  `id_paciente` int unsigned NOT NULL,\n  PRIMARY KEY (`id_avaliacao`),\n  UNIQUE KEY `uq_avaliacao_paciente_data` (`id_paciente`,`data_avaliacao`),\n  KEY `idx_avaliacao_dor` (`id_paciente`,`nivel_dor`),\n  CONSTRAINT `fk_avaliacao_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id_paciente`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `ck_avaliacao_nivel_dor` CHECK ((`nivel_dor` between 0 and 10))\n) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "convenio": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_convenio",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nome",
+        "COLUMN_TYPE": "varchar(150)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `convenio` (\n  `id_convenio` int unsigned NOT NULL AUTO_INCREMENT,\n  `nome` varchar(150) NOT NULL,\n  PRIMARY KEY (`id_convenio`),\n  UNIQUE KEY `uq_convenio_nome` (`nome`)\n) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "especialidade": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_especialidade",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nome",
+        "COLUMN_TYPE": "varchar(100)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "descricao",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `especialidade` (\n  `id_especialidade` int unsigned NOT NULL AUTO_INCREMENT,\n  `nome` varchar(100) NOT NULL,\n  `descricao` text,\n  PRIMARY KEY (`id_especialidade`),\n  UNIQUE KEY `uq_especialidade_nome` (`nome`)\n) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "estagiario": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_profissional",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "instituicao_ensino",
+        "COLUMN_TYPE": "varchar(150)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_supervisor",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `estagiario` (\n  `id_profissional` int unsigned NOT NULL,\n  `instituicao_ensino` varchar(150) NOT NULL,\n  `id_supervisor` int unsigned NOT NULL,\n  PRIMARY KEY (`id_profissional`),\n  KEY `fk_estagiario_supervisor` (`id_supervisor`),\n  CONSTRAINT `fk_estagiario_profissional` FOREIGN KEY (`id_profissional`) REFERENCES `profissional` (`id_profissional`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `fk_estagiario_supervisor` FOREIGN KEY (`id_supervisor`) REFERENCES `fisioterapeuta` (`id_profissional`) ON DELETE RESTRICT ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "evolucao": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_tratamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "numero_sessao",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "conduta_aplicada",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "resposta_observada",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `evolucao` (\n  `id_tratamento` int unsigned NOT NULL,\n  `numero_sessao` int unsigned NOT NULL,\n  `conduta_aplicada` text NOT NULL,\n  `resposta_observada` text NOT NULL,\n  PRIMARY KEY (`id_tratamento`,`numero_sessao`),\n  CONSTRAINT `fk_evolucao_sessao` FOREIGN KEY (`id_tratamento`, `numero_sessao`) REFERENCES `sessao` (`id_tratamento`, `numero_sessao`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "exercicio": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_exercicio",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nome",
+        "COLUMN_TYPE": "varchar(100)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "regiao_corpo",
+        "COLUMN_TYPE": "varchar(100)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "descricao",
+        "COLUMN_TYPE": "text",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `exercicio` (\n  `id_exercicio` int unsigned NOT NULL AUTO_INCREMENT,\n  `nome` varchar(100) NOT NULL,\n  `regiao_corpo` varchar(100) NOT NULL,\n  `descricao` text,\n  PRIMARY KEY (`id_exercicio`),\n  UNIQUE KEY `uq_exercicio_nome` (`nome`)\n) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "fisioterapeuta": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_profissional",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "crefito",
+        "COLUMN_TYPE": "varchar(30)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `fisioterapeuta` (\n  `id_profissional` int unsigned NOT NULL,\n  `crefito` varchar(30) NOT NULL,\n  PRIMARY KEY (`id_profissional`),\n  UNIQUE KEY `uq_fisioterapeuta_crefito` (`crefito`),\n  CONSTRAINT `fk_fisioterapeuta_profissional` FOREIGN KEY (`id_profissional`) REFERENCES `profissional` (`id_profissional`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "habilitacao_profissional": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_profissional",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_especialidade",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_habilitacao",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `habilitacao_profissional` (\n  `id_profissional` int unsigned NOT NULL,\n  `id_especialidade` int unsigned NOT NULL,\n  `data_habilitacao` date NOT NULL,\n  PRIMARY KEY (`id_profissional`,`id_especialidade`),\n  KEY `idx_habilitacao_especialidade` (`id_especialidade`),\n  CONSTRAINT `fk_habilitacao_especialidade` FOREIGN KEY (`id_especialidade`) REFERENCES `especialidade` (`id_especialidade`) ON DELETE RESTRICT ON UPDATE CASCADE,\n  CONSTRAINT `fk_habilitacao_profissional` FOREIGN KEY (`id_profissional`) REFERENCES `profissional` (`id_profissional`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "paciente": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_paciente",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "cpf",
+        "COLUMN_TYPE": "char(11)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nome",
+        "COLUMN_TYPE": "varchar(150)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_nascimento",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "telefone",
+        "COLUMN_TYPE": "varchar(20)",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "situacao",
+        "COLUMN_TYPE": "enum('ATIVO','INATIVO')",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": "ATIVO",
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_convenio",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `paciente` (\n  `id_paciente` int unsigned NOT NULL AUTO_INCREMENT,\n  `cpf` char(11) NOT NULL,\n  `nome` varchar(150) NOT NULL,\n  `data_nascimento` date NOT NULL,\n  `telefone` varchar(20) DEFAULT NULL,\n  `situacao` enum('ATIVO','INATIVO') NOT NULL DEFAULT 'ATIVO',\n  `id_convenio` int unsigned DEFAULT NULL,\n  PRIMARY KEY (`id_paciente`),\n  UNIQUE KEY `uq_paciente_cpf` (`cpf`),\n  KEY `idx_paciente_convenio` (`id_convenio`),\n  KEY `idx_paciente_busca` (`data_nascimento`,`id_convenio`,`telefone`),\n  CONSTRAINT `fk_paciente_convenio` FOREIGN KEY (`id_convenio`) REFERENCES `convenio` (`id_convenio`) ON DELETE SET NULL ON UPDATE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "profissional": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_profissional",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "nome",
+        "COLUMN_TYPE": "varchar(150)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "cpf",
+        "COLUMN_TYPE": "char(11)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "telefone",
+        "COLUMN_TYPE": "varchar(20)",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "email",
+        "COLUMN_TYPE": "varchar(254)",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `profissional` (\n  `id_profissional` int unsigned NOT NULL AUTO_INCREMENT,\n  `nome` varchar(150) NOT NULL,\n  `cpf` char(11) NOT NULL,\n  `telefone` varchar(20) DEFAULT NULL,\n  `email` varchar(254) DEFAULT NULL,\n  PRIMARY KEY (`id_profissional`),\n  UNIQUE KEY `uq_profissional_cpf` (`cpf`)\n) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "sala": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_sala",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "codigo",
+        "COLUMN_TYPE": "varchar(30)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "UNI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "capacidade",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `sala` (\n  `id_sala` int unsigned NOT NULL AUTO_INCREMENT,\n  `codigo` varchar(30) NOT NULL,\n  `capacidade` int unsigned NOT NULL,\n  PRIMARY KEY (`id_sala`),\n  UNIQUE KEY `uq_sala_codigo` (`codigo`),\n  CONSTRAINT `ck_sala_capacidade` CHECK ((`capacidade` > 0))\n) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "sessao": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_tratamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "numero_sessao",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_hora",
+        "COLUMN_TYPE": "datetime",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "situacao",
+        "COLUMN_TYPE": "enum('AGENDADA','REALIZADA','CANCELADA','FALTA')",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": "AGENDADA",
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_sala",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      }
+    ],
+    "ddl": "CREATE TABLE `sessao` (\n  `id_tratamento` int unsigned NOT NULL,\n  `numero_sessao` int unsigned NOT NULL,\n  `data_hora` datetime NOT NULL,\n  `situacao` enum('AGENDADA','REALIZADA','CANCELADA','FALTA') NOT NULL DEFAULT 'AGENDADA',\n  `id_sala` int unsigned NOT NULL,\n  PRIMARY KEY (`id_tratamento`,`numero_sessao`),\n  UNIQUE KEY `uq_sessao_sala_horario` (`id_sala`,`data_hora`),\n  KEY `idx_sessao_sala` (`id_sala`),\n  KEY `idx_sessao_data_hora` (`data_hora`),\n  KEY `idx_sessao_situacao` (`situacao`,`id_tratamento`),\n  CONSTRAINT `fk_sessao_sala` FOREIGN KEY (`id_sala`) REFERENCES `sala` (`id_sala`) ON DELETE RESTRICT ON UPDATE CASCADE,\n  CONSTRAINT `fk_sessao_tratamento` FOREIGN KEY (`id_tratamento`) REFERENCES `tratamento` (`id_tratamento`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `ck_sessao_numero` CHECK ((`numero_sessao` > 0))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  },
+  "tratamento": {
+    "colunas": [
+      {
+        "COLUMN_NAME": "id_tratamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "PRI",
+        "EXTRA": "auto_increment",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "descricao_condicao",
+        "COLUMN_TYPE": "varchar(255)",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_inicio",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "data_alta",
+        "COLUMN_TYPE": "date",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_paciente",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_fisioterapeuta",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_especialidade",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "NO",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "MUL",
+        "EXTRA": "",
+        "GENERATION_EXPRESSION": ""
+      },
+      {
+        "COLUMN_NAME": "id_especialidade_em_andamento",
+        "COLUMN_TYPE": "int unsigned",
+        "IS_NULLABLE": "YES",
+        "COLUMN_DEFAULT": null,
+        "COLUMN_KEY": "",
+        "EXTRA": "STORED GENERATED",
+        "GENERATION_EXPRESSION": "(case when (`data_alta` is null) then `id_especialidade` else NULL end)"
+      }
+    ],
+    "ddl": "CREATE TABLE `tratamento` (\n  `id_tratamento` int unsigned NOT NULL AUTO_INCREMENT,\n  `descricao_condicao` varchar(255) NOT NULL,\n  `data_inicio` date NOT NULL,\n  `data_alta` date DEFAULT NULL,\n  `id_paciente` int unsigned NOT NULL,\n  `id_fisioterapeuta` int unsigned NOT NULL,\n  `id_especialidade` int unsigned NOT NULL,\n  `id_especialidade_em_andamento` int unsigned GENERATED ALWAYS AS ((case when (`data_alta` is null) then `id_especialidade` else NULL end)) STORED,\n  PRIMARY KEY (`id_tratamento`),\n  UNIQUE KEY `uq_tratamento_paciente_especialidade_aberto` (`id_paciente`,`id_especialidade_em_andamento`),\n  KEY `idx_tratamento_paciente` (`id_paciente`),\n  KEY `idx_tratamento_fisioterapeuta` (`id_fisioterapeuta`),\n  KEY `idx_tratamento_especialidade` (`id_especialidade`),\n  CONSTRAINT `fk_tratamento_especialidade` FOREIGN KEY (`id_especialidade`) REFERENCES `especialidade` (`id_especialidade`),\n  CONSTRAINT `fk_tratamento_fisioterapeuta` FOREIGN KEY (`id_fisioterapeuta`) REFERENCES `fisioterapeuta` (`id_profissional`),\n  CONSTRAINT `fk_tratamento_paciente` FOREIGN KEY (`id_paciente`) REFERENCES `paciente` (`id_paciente`),\n  CONSTRAINT `ck_tratamento_datas` CHECK (((`data_alta` is null) or (`data_alta` >= `data_inicio`)))\n) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci"
+  }
+}

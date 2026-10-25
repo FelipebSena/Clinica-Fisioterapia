@@ -1,0 +1,169 @@
+{
+  "base_preservada": "02e1469",
+  "verificacoes": [
+    {
+      "verificacao": "Todas as tabelas do catálogo estão no dicionário",
+      "resultado": "PASSOU",
+      "detalhe": "15 tabelas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: aplicacao_exercicio",
+      "resultado": "PASSOU",
+      "detalhe": "6 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: auditoria_evolucao",
+      "resultado": "PASSOU",
+      "detalhe": "10 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: avaliacao_fisica",
+      "resultado": "PASSOU",
+      "detalhe": "6 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: convenio",
+      "resultado": "PASSOU",
+      "detalhe": "2 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: especialidade",
+      "resultado": "PASSOU",
+      "detalhe": "3 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: estagiario",
+      "resultado": "PASSOU",
+      "detalhe": "3 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: evolucao",
+      "resultado": "PASSOU",
+      "detalhe": "4 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: exercicio",
+      "resultado": "PASSOU",
+      "detalhe": "4 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: fisioterapeuta",
+      "resultado": "PASSOU",
+      "detalhe": "2 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: habilitacao_profissional",
+      "resultado": "PASSOU",
+      "detalhe": "3 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: paciente",
+      "resultado": "PASSOU",
+      "detalhe": "7 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: profissional",
+      "resultado": "PASSOU",
+      "detalhe": "5 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: sala",
+      "resultado": "PASSOU",
+      "detalhe": "3 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: sessao",
+      "resultado": "PASSOU",
+      "detalhe": "5 colunas"
+    },
+    {
+      "verificacao": "Colunas completas e em ordem: tratamento",
+      "resultado": "PASSOU",
+      "detalhe": "8 colunas"
+    },
+    {
+      "verificacao": "Links locais resolvem",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: SQL/etapa01.sql",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: SQL/etapa02.sql",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: interface/ClinicaApp.java",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: docs/modelo-logico.pdf",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: docs/escopo-regras-negocio.pdf",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: docs/mer-conceitual.drawio",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Arquivo de outro escopo preservado: docs/mer-conceitual.png",
+      "resultado": "PASSOU",
+      "detalhe": "Comparação dos objetos Git, respeitando conversão CRLF/LF do checkout"
+    },
+    {
+      "verificacao": "Evidência corresponde ao SQL: SQL\\etapa01.sql",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "Evidência corresponde ao SQL: SQL\\etapa02.sql",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "Validação de banco aprovada e restauração registrada",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "Original preservado no histórico: docs/historico/dicionário-dados.pdf",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "Original preservado no histórico: docs/historico/relatorio-etapa2.pdf",
+      "resultado": "PASSOU",
+      "detalhe": ""
+    },
+    {
+      "verificacao": "PDF tem texto legível: dicionario-dados",
+      "resultado": "PASSOU",
+      "detalhe": "12 páginas; inspeção visual complementar realizada separadamente"
+    },
+    {
+      "verificacao": "PDF tem texto legível: relatorio-etapa1",
+      "resultado": "PASSOU",
+      "detalhe": "3 páginas; inspeção visual complementar realizada separadamente"
+    },
+    {
+      "verificacao": "PDF tem texto legível: relatorio-etapa2",
+      "resultado": "PASSOU",
+      "detalhe": "4 páginas; inspeção visual complementar realizada separadamente"
+    }
+  ],
+  "resumo": {
+    "passaram": 32,
+    "falharam": 0
+  }
+}

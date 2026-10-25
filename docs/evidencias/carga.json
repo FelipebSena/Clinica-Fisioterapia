@@ -1,0 +1,62 @@
+{
+  "aplicacao_exercicio": {
+    "linhas": 440,
+    "sha256_dados": "3c173c59876c94abba82a70e61dda7ef28297bae3820020007a01c144f0e44ed"
+  },
+  "auditoria_evolucao": {
+    "linhas": 0,
+    "sha256_dados": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "avaliacao_fisica": {
+    "linhas": 103,
+    "sha256_dados": "8531ccd44ed359ecc71a92d208cc4d3acea06550a7dd1364dd81a85921bf416f"
+  },
+  "convenio": {
+    "linhas": 8,
+    "sha256_dados": "7ae2fb75a088bd46627933b41c98dfc56b8bb3d11a91e420651feae4ebc7784c"
+  },
+  "especialidade": {
+    "linhas": 8,
+    "sha256_dados": "a0a57b53d9ba0b96f7b065d696d61aa2c3c07c2e82f15877a640c8b4125925e6"
+  },
+  "estagiario": {
+    "linhas": 20,
+    "sha256_dados": "e6a8e82f8c122af836affdebdc75d64f78d4181beffca876cc7026fd5713788d"
+  },
+  "evolucao": {
+    "linhas": 169,
+    "sha256_dados": "00aade24893cc8c16e5026953bdf6e74d5fe61e93576c9f9743987c4b73d1c84"
+  },
+  "exercicio": {
+    "linhas": 13,
+    "sha256_dados": "457ef74c7fe92899d4e9b15abc1fad9c76df0f475dc327ef19cd7ba729c66b8e"
+  },
+  "fisioterapeuta": {
+    "linhas": 20,
+    "sha256_dados": "2927c307777c5d36098e2ee4c649cf6a5a4982d377db5651874b755a8b12a9cf"
+  },
+  "habilitacao_profissional": {
+    "linhas": 40,
+    "sha256_dados": "339926f489f406fb6fa075a3eafd8c9a33ac8b3692eb364d7da3875017148dda"
+  },
+  "paciente": {
+    "linhas": 40,
+    "sha256_dados": "cbd2e95048b34bb9c4047c03ab80b1ff824bbbd4a5e209259bbb4701abeb56be"
+  },
+  "profissional": {
+    "linhas": 40,
+    "sha256_dados": "8dd7867c6c58a4e445eebdfe488c4c9ddc7d5a1e7da53b88a5157f72fe91681d"
+  },
+  "sala": {
+    "linhas": 8,
+    "sha256_dados": "b65c0fff14530ff14d0d7ad714e026d16bf9bb776d6e52b0fb11b9720d9212fc"
+  },
+  "sessao": {
+    "linhas": 237,
+    "sha256_dados": "d8be04a68726b72ae71496396d46a97d80b044ca96fa8283f7f706d60f74d0f6"
+  },
+  "tratamento": {
+    "linhas": 40,
+    "sha256_dados": "af69295f798b782c59be398c9e74769cac3ebf94f971125612b505616b0d8447"
+  }
+}
