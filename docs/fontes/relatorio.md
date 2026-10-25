@@ -8,7 +8,7 @@ Documentação e validação: David Fernandes dos Santos. Equipe: David, Felipe 
 
 O projeto organiza o atendimento de uma clínica de fisioterapia, desde o cadastro do paciente até as sessões e o registro da evolução. Este relatório reúne a modelagem, as regras de negócio, os resultados dos testes e o planejamento de backup e crescimento. O [dicionário de dados](../dicionario-dados.pdf) apresenta as colunas e restrições de cada tabela.
 
-A documentação corresponde aos scripts do commit `02e1469`. Foram consultados o [escopo](../escopo-regras-negocio.pdf), o [modelo lógico](../modelo-logico.pdf), o [MER](../mer-conceitual.png) e o código disponível no repositório. Os arquivos de implementação e os modelos dos demais integrantes foram mantidos.
+O trabalho foi elaborado a partir do [escopo](../escopo-regras-negocio.pdf), do [modelo lógico](../modelo-logico.pdf), do [MER](../mer-conceitual.png) e dos scripts SQL do projeto. A versão utilizada nos testes é a do commit `02e1469`.
 
 ## 2. Etapa 1 - modelagem e implementação
 
@@ -58,13 +58,13 @@ O modelo lógico separa dados de pacientes, convênios, profissionais e especial
 | RN25 | Código único e capacidade positiva | Capacidade não controla ocupação simultânea |
 | RN26 | Nome do exercício único e região obrigatória | Região não pode ser NULL |
 
-O banco foi testado em modo SQL estrito. Formatos de telefone e e-mail, textos vazios e dígitos verificadores do CPF não são validados por todas as restrições. A carga também contém um convênio chamado Particular, além da possibilidade de usar NULL; são duas representações que o grupo precisa padronizar.
+O banco foi testado em modo SQL estrito. Formatos de telefone e e-mail, textos vazios e dígitos verificadores do CPF não são validados por todas as restrições. Na carga, o atendimento particular aparece tanto pela ausência de convênio (NULL) quanto pelo cadastro chamado Particular.
 
 ### 2.3 Carga e consultas
 
 `SQL/etapa01.sql` reúne criação do banco, restrições, carga fictícia e 15 consultas. As tabelas usam InnoDB, utf8mb4 e collation utf8mb4_0900_ai_ci. As 69 instruções do arquivo foram executadas sem erro no MySQL 8.0.46.
 
-A carga contém 1.286 linhas nas 14 tabelas de domínio: 40 pacientes, 40 profissionais, 20 fisioterapeutas, 20 estagiários, 8 convênios, 8 especialidades, 40 habilitações, 40 tratamentos, 8 salas, 237 sessões, 169 evoluções, 13 exercícios, 440 aplicações e 103 avaliações. A auditoria começa vazia. A data de referência dos dados fictícios é 24/10/2026.
+A carga contém 1.186 linhas nas 14 tabelas de domínio: 40 pacientes, 40 profissionais, 20 fisioterapeutas, 20 estagiários, 8 convênios, 8 especialidades, 40 habilitações, 40 tratamentos, 8 salas, 237 sessões, 169 evoluções, 13 exercícios, 440 aplicações e 103 avaliações. A auditoria começa vazia. A data de referência dos dados fictícios é 24/10/2026.
 
 | Consultas | Conteúdo | Recursos SQL |
 | --- | --- | --- |
@@ -102,15 +102,15 @@ Foram comparadas as consultas 5, 10 e 14 antes e depois dos índices da etapa 2.
 <!-- PERF_INICIO -->
 | Consulta | Resultado (linhas) | Custo antes/depois | Mediana antes/depois (ms) |
 | --- | --- | --- | --- |
-| 5 | 2 | 3.07 / 3.07 | 0.3053 / 0.2896 |
-| 10 | 40 | 52.00 / 40.76 | 0.6585 / 0.6387 |
-| 14 | 14 | 68.72 / 61.91 | 0.7702 / 0.6506 |
+| 5 | 2 | 3,07 / 3,07 | 0,3053 / 0,2896 |
+| 10 | 40 | 52,00 / 40,76 | 0,6585 / 0,6387 |
+| 14 | 14 | 68,72 / 61,91 | 0,7702 / 0,6506 |
 <!-- PERF_FIM -->
 
 O custo é a estimativa do otimizador, não o tempo em milissegundos. As medianas incluem comunicação e leitura dos resultados. Como a carga é pequena e não houve concorrência, os valores não demonstram desempenho de produção.
 
 - **Consulta 5:** `idx_paciente_busca (data_nascimento, id_convenio, telefone)` não foi escolhido. O plano manteve os índices de nome do convênio e de convênio do paciente. Não houve benefício demonstrado nessa carga. A consulta atual não contém filtro de paciente ativo.
-- **Consulta 10:** `idx_sessao_situacao (situacao, id_tratamento)` passou a ser usado como acesso coberto. O custo estimado caiu, mas a mediana não acompanhou necessariamente essa redução. Agrupamento e ordenação continuam necessários.
+- **Consulta 10:** `idx_sessao_situacao (situacao, id_tratamento)` passou a ser usado como acesso coberto. O custo estimado caiu, e a mediana apresentou uma pequena redução. Agrupamento e ordenação continuam necessários.
 - **Consulta 14:** o plano posterior usa os índices de situação da sessão e de avaliação por paciente/dor. O custo estimado diminuiu. Como os índices foram aplicados juntos, não foi isolada a contribuição de cada um.
 
 ### 3.4 Integração com a interface
@@ -122,15 +122,15 @@ O custo é a estimativa do otimizador, não o tempo em milissegundos. As mediana
 - Referência à view `vw_relatorio_consolidado`, ausente nos scripts.
 - Credencial padrão embutida e resposta clínica positiva fixa na transação.
 
-Esses achados não foram corrigidos nesta entrega de documentação. A presença de PreparedStatement, COMMIT e ROLLBACK no arquivo não substitui o teste de seus fluxos.
+O código usa PreparedStatement, COMMIT e ROLLBACK. O funcionamento desses fluxos ainda depende de teste da aplicação com o banco; a compilação, sozinha, não verifica essa integração.
 
 ## 4. Testes e resultados
 
 <!-- TESTES_INICIO -->
-Foram concluídos 54 testes, sem falhas, em MySQL 8.0.46, no dia 25/10/2026. O dump completo teve 113,803 bytes; levou 0.136 s para gerar e 1.357 s para restaurar. Esses tempos se referem à base acadêmica local e não estimam a recuperação de uma clínica em produção.
+Foram concluídos 54 testes, sem falhas, em MySQL 8.0.46, no dia 25/10/2026. O dump completo teve 113.803 bytes; levou 0,136 s para gerar e 1,357 s para restaurar. Esses tempos se referem à base acadêmica local e não estimam a recuperação de uma clínica em produção.
 <!-- TESTES_FIM -->
 
-Os testes usaram uma instância isolada em 127.0.0.1:33317, com dados fictícios. O serviço MySQL da equipe não foi utilizado. A lista de casos, códigos de erro, contagens, hashes e planos está reunida em [apoio/evidencias.json](../apoio/evidencias.json).
+Os testes usaram uma instância isolada em 127.0.0.1:33317, com dados fictícios. A lista de casos, códigos de erro, contagens, hashes e planos está reunida em [apoio/evidencias.json](../apoio/evidencias.json).
 
 | Grupo | Conferência realizada |
 | --- | --- |
@@ -147,7 +147,7 @@ Nos testes negativos, a operação inválida só foi considerada corretamente bl
 
 ### 5.1 Backup e restauração
 
-A proposta é um backup lógico completo com mysqldump. O relatório anterior, incluído por Felipe Romero no commit `6525092`, citava backup diferencial; essa classificação foi corrigida. Para InnoDB, o comando usa snapshot consistente, sem alterações de estrutura durante a cópia, e inclui rotinas, eventos e gatilhos.
+O plano adota backup lógico completo com mysqldump. A classificação como diferencial, usada no relatório anterior, não corresponde a esse procedimento. Para InnoDB, o comando usa snapshot consistente, sem alterações de estrutura durante a cópia, e inclui rotinas, eventos e gatilhos.
 
 Exemplo para PowerShell, com um login-path de backup já configurado fora do Git:
 
@@ -196,16 +196,16 @@ Os tipos físicos incluem INT UNSIGNED nas chaves, TINYINT UNSIGNED com CHECK na
 
 ## 6. Registro das decisões
 
-| Decisão documental | Motivo |
+| Decisão | Motivo |
 | --- | --- |
-| Usar etapa01.sql e etapa02.sql no README | Os três arquivos antes citados não existem separadamente |
-| Completar o dicionário pelo catálogo do MySQL | Incluir FKs, coluna gerada e auditoria |
-| Registrar totalidade e sequência como limites | O banco não garante subtipo para todo profissional nem numeração sem lacunas |
-| Substituir afirmações de ganho por medições | A consulta 5 não usou o índice proposto |
-| Corrigir backup e recomendação de particionamento | Alinhar o texto às ferramentas e às FKs do projeto |
-| Reunir os registros neste relatório | Evitar documentos repetidos e facilitar a entrega |
+| Chaves compostas em sessão e evolução | Identificar cada sessão dentro do tratamento e vincular sua evolução |
+| Coluna gerada no tratamento | Impedir dois tratamentos abertos por paciente e especialidade |
+| Auditoria sem FK para sessão | Manter o registro após a exclusão dos dados de origem |
+| Comparação dos índices com EXPLAIN | Verificar a escolha do otimizador; a consulta 5 não usou o índice proposto |
+| Backup lógico completo | Manter um procedimento de cópia e restauração com mysqldump |
+| Sessão sem particionamento | Preservar as FKs do modelo atual |
 
-O relatório descreve a versão testada. Permanecem limites de concorrência, totalidade da especialização, sequência de sessões e sobreposição de agenda. As hipóteses de backup e crescimento estão identificadas como propostas. Os requisitos usados na conferência são os presentes no repositório; o enunciado integral da disciplina não consta entre os arquivos recebidos.
+As regras RN01 a RN26 foram relacionadas às restrições do banco; os casos executados estão resumidos na seção 4. A totalidade da especialização, a sequência sem lacunas e a sobreposição de sessões por duração não são garantidas pelo banco. A concorrência não foi testada. Os parâmetros de backup e crescimento são hipóteses de planejamento.
 
 ## 7. Como reproduzir a validação
 
@@ -216,7 +216,7 @@ As ferramentas ficam em `docs/apoio/ferramentas/`. **O teste do banco apaga e re
 3. Executar `python docs/apoio/ferramentas/validar_banco.py --confirmar-base-descartavel` e conferir código de saída zero e resultados completos.
 4. Executar `python docs/apoio/ferramentas/gerar_documentacao.py` para atualizar os PDFs e `python docs/apoio/ferramentas/verificar_documentacao.py` para conferir cobertura, links e arquivos preservados.
 
-Uma mudança nos scripts exige nova execução dos testes. Reorganizar documentos não transforma evidências antigas em uma nova medição: os resultados desta entrega permanecem os de 25/10/2026 sobre o commit `02e1469`.
+Os resultados foram obtidos em 25/10/2026, sobre o commit `02e1469`. Alterações nos scripts exigem nova execução dos testes.
 
 ## 8. Referências
 

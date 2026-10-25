@@ -47,11 +47,11 @@ TABLE_DESC = {
  'auditoria_evolucao':'Registro técnico de alterações/exclusões de evolução; etapa 2.'}
 
 FIELD_DESC = {
- 'cpf':'Identificador CPF, armazenado como texto. UNIQUE; não valida dígitos verificadores no banco.',
- 'nome':'Nome de cadastro. NOT NULL não impede texto vazio.',
+ 'cpf':'CPF em texto, sem pontuação. Os dígitos verificadores não são validados.',
+ 'nome':'Nome usado no cadastro.',
  'data_nascimento':'Data de nascimento. Gatilhos impedem data futura.',
  'telefone':'Um contato principal; NULL indica ausência.',
- 'situacao':'Estado cadastral ou da sessão conforme os valores ENUM declarados.',
+ 'situacao':'Situação registrada no cadastro.',
  'email':'Um endereço de e-mail; formato não validado por CHECK.',
  'crefito':'Registro profissional único; formato não validado pelo banco.',
  'instituicao_ensino':'Instituição do estagiário.',
@@ -65,13 +65,13 @@ FIELD_DESC = {
  'codigo':'Código único de identificação da sala.',
  'capacidade':'Capacidade declarada positiva; não calcula ocupação.',
  'numero_sessao':'Número positivo dentro do tratamento. Não há garantia de sequência sem lacunas.',
- 'data_hora':'Data/hora da sessão ou do evento de auditoria; DATETIME sem fuso armazenado.',
+ 'data_hora':'Data e horário da sessão; sem fuso armazenado.',
  'conduta_aplicada':'Texto da conduta da sessão realizada.',
  'resposta_observada':'Texto da resposta observada na sessão.',
  'regiao_corpo':'Região corporal trabalhada pelo exercício.',
  'series':'Quantidade positiva de séries.',
  'repeticoes':'Quantidade positiva de repetições por série.',
- 'carga':'Carga numérica não negativa ou NULL. Unidade não definida no esquema; confirmar com a equipe.',
+ 'carga':'Carga não negativa ou NULL. A unidade não está definida no esquema.',
  'data_avaliacao':'Data da avaliação; única por paciente.',
  'nivel_dor':'Inteiro de 0 a 10, conforme CHECK.',
  'amplitude_movimento':'Descrição textual até 100 caracteres; unidade/padrão clínico não definido.',
@@ -81,7 +81,7 @@ FIELD_DESC = {
  'conduta_nova':'Conduta após UPDATE; NULL na exclusão.',
  'resposta_anterior':'Resposta antes da alteração/exclusão.',
  'resposta_nova':'Resposta após UPDATE; NULL na exclusão.',
- 'usuario_db':'Usuário e host da conexão, obtidos por USER(); até 288 caracteres.'}
+ 'usuario_db':'Usuário e host da conexão, obtidos por USER().'}
 
 
 def dictionary():
@@ -107,7 +107,10 @@ def dictionary():
             default = str(col['COLUMN_DEFAULT']) if col['COLUMN_DEFAULT'] is not None else ('NULL' if col['IS_NULLABLE']=='YES' else 'Sem padrão')
             if 'auto_increment' in extra: default='AUTO_INCREMENT'
             if col['GENERATION_EXPRESSION']: default='Gerada STORED; ver expressão abaixo'
-            meaning=FIELD_DESC.get(name, 'Identificador de '+name.removeprefix('id_')+'.')
+            labels={'convenio':'do convênio','paciente':'do paciente','profissional':'do profissional','especialidade':'da especialidade','tratamento':'do tratamento','sala':'da sala','exercicio':'do exercício','avaliacao':'da avaliação','auditoria':'do registro de auditoria','fisioterapeuta':'do fisioterapeuta responsável'}
+            meaning=FIELD_DESC.get(name, 'Identificador '+labels.get(name.removeprefix('id_'),name.removeprefix('id_'))+'.')
+            if name=='situacao': meaning='Situação da sessão.' if table=='sessao' else 'Situação cadastral do paciente.'
+            if name=='data_hora' and table=='auditoria_evolucao': meaning='Data e horário da alteração ou exclusão; sem fuso armazenado.'
             if table=='auditoria_evolucao' and name=='numero_sessao':
                 meaning='Número da sessão de origem, copiado pelo gatilho; sem FK ou CHECK nesta tabela.'
             lines.append(f"| `{name}` | {col['COLUMN_TYPE']} | {'Sim' if col['IS_NULLABLE']=='YES' else 'Não'} | {default} | {meaning} |")
@@ -148,11 +151,11 @@ def evidence_sections():
     for n in ('5','10','14'):
         a,b=perf['antes'][n],perf['depois'][n]
         costs=[x['explain']['query_block'].get('cost_info',{}).get('query_cost','não informado') for x in (a,b)]
-        lines.append(f"| {n} | {a['linhas_resultado']} | {' / '.join(costs)} | {a['mediana_cliente_ms']:.4f} / {b['mediana_cliente_ms']:.4f} |")
+        lines.append(f"| {n} | {a['linhas_resultado']} | {' / '.join(x.replace('.',',') for x in costs)} | {format(a['mediana_cliente_ms'],'.4f').replace('.',',')} / {format(b['mediana_cliente_ms'],'.4f').replace('.',',')} |")
     replace_section(FONTES/'relatorio.md','PERF','\n'.join(lines))
     data=read_json('validacao.json'); backup=data['backup']
     text=f"Foram concluídos {data['resumo']['passaram']} testes, sem falhas, em MySQL {data['mysql']}, no dia 25/10/2026. "
-    text+=f"O dump completo teve {backup['bytes']:,} bytes; levou {backup['segundos_backup']:.3f} s para gerar e {backup['segundos_restauracao']:.3f} s para restaurar. "
+    text+=f"O dump completo teve {format(backup['bytes'],',').replace(',','.')} bytes; levou {format(backup['segundos_backup'],'.3f').replace('.',',')} s para gerar e {format(backup['segundos_restauracao'],'.3f').replace('.',',')} s para restaurar. "
     text+="Esses tempos se referem à base acadêmica local e não estimam a recuperação de uma clínica em produção."
     replace_section(FONTES/'relatorio.md','TESTES',text)
 
@@ -219,7 +222,7 @@ def pdf_from_markdown(path):
         else:
             following=next((x.strip() for x in lines[i+1:] if x.strip()),'')
             paragraph=Paragraph(inline(line),styles['BodyDoc'])
-            if following.startswith('|'): paragraph.keepWithNext=True
+            if following.startswith(('|','```')) or line=='**Chaves e restrições**': paragraph.keepWithNext=True
             story.append(paragraph)
         i+=1
     def footer(canvas,doc):

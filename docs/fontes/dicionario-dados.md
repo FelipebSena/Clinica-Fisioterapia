@@ -14,8 +14,8 @@ Catálogo de convênios; paciente pode não possuir vínculo.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_convenio` | int unsigned | Não | AUTO_INCREMENT | Identificador de convenio. |
-| `nome` | varchar(150) | Não | Sem padrão | Nome de cadastro. NOT NULL não impede texto vazio. |
+| `id_convenio` | int unsigned | Não | AUTO_INCREMENT | Identificador do convênio. |
+| `nome` | varchar(150) | Não | Sem padrão | Nome usado no cadastro. |
 
 **Chaves e restrições**
 
@@ -28,13 +28,13 @@ Cadastro de pacientes e situação administrativa.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_paciente` | int unsigned | Não | AUTO_INCREMENT | Identificador de paciente. |
-| `cpf` | char(11) | Não | Sem padrão | Identificador CPF, armazenado como texto. UNIQUE; não valida dígitos verificadores no banco. |
-| `nome` | varchar(150) | Não | Sem padrão | Nome de cadastro. NOT NULL não impede texto vazio. |
+| `id_paciente` | int unsigned | Não | AUTO_INCREMENT | Identificador do paciente. |
+| `cpf` | char(11) | Não | Sem padrão | CPF em texto, sem pontuação. Os dígitos verificadores não são validados. |
+| `nome` | varchar(150) | Não | Sem padrão | Nome usado no cadastro. |
 | `data_nascimento` | date | Não | Sem padrão | Data de nascimento. Gatilhos impedem data futura. |
 | `telefone` | varchar(20) | Sim | NULL | Um contato principal; NULL indica ausência. |
-| `situacao` | enum('ATIVO','INATIVO') | Não | ATIVO | Estado cadastral ou da sessão conforme os valores ENUM declarados. |
-| `id_convenio` | int unsigned | Sim | NULL | Identificador de convenio. |
+| `situacao` | enum('ATIVO','INATIVO') | Não | ATIVO | Situação cadastral do paciente. |
+| `id_convenio` | int unsigned | Sim | NULL | Identificador do convênio. |
 
 **Chaves e restrições**
 
@@ -50,9 +50,9 @@ Dados comuns aos dois subtipos de profissionais.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_profissional` | int unsigned | Não | AUTO_INCREMENT | Identificador de profissional. |
-| `nome` | varchar(150) | Não | Sem padrão | Nome de cadastro. NOT NULL não impede texto vazio. |
-| `cpf` | char(11) | Não | Sem padrão | Identificador CPF, armazenado como texto. UNIQUE; não valida dígitos verificadores no banco. |
+| `id_profissional` | int unsigned | Não | AUTO_INCREMENT | Identificador do profissional. |
+| `nome` | varchar(150) | Não | Sem padrão | Nome usado no cadastro. |
+| `cpf` | char(11) | Não | Sem padrão | CPF em texto, sem pontuação. Os dígitos verificadores não são validados. |
 | `telefone` | varchar(20) | Sim | NULL | Um contato principal; NULL indica ausência. |
 | `email` | varchar(254) | Sim | NULL | Um endereço de e-mail; formato não validado por CHECK. |
 
@@ -67,7 +67,7 @@ Subtipo profissional habilitado a responder por tratamento.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_profissional` | int unsigned | Não | Sem padrão | Identificador de profissional. |
+| `id_profissional` | int unsigned | Não | Sem padrão | Identificador do profissional. |
 | `crefito` | varchar(30) | Não | Sem padrão | Registro profissional único; formato não validado pelo banco. |
 
 **Chaves e restrições**
@@ -82,7 +82,7 @@ Subtipo com instituição de ensino e supervisor fisioterapeuta.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_profissional` | int unsigned | Não | Sem padrão | Identificador de profissional. |
+| `id_profissional` | int unsigned | Não | Sem padrão | Identificador do profissional. |
 | `instituicao_ensino` | varchar(150) | Não | Sem padrão | Instituição do estagiário. |
 | `id_supervisor` | int unsigned | Não | Sem padrão | Fisioterapeuta supervisor; obrigatório; não pode ser o próprio estagiário. |
 
@@ -100,8 +100,8 @@ Catálogo de especialidades de atendimento.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_especialidade` | int unsigned | Não | AUTO_INCREMENT | Identificador de especialidade. |
-| `nome` | varchar(100) | Não | Sem padrão | Nome de cadastro. NOT NULL não impede texto vazio. |
+| `id_especialidade` | int unsigned | Não | AUTO_INCREMENT | Identificador da especialidade. |
+| `nome` | varchar(100) | Não | Sem padrão | Nome usado no cadastro. |
 | `descricao` | text | Sim | NULL | Descrição livre opcional do catálogo. |
 
 **Chaves e restrições**
@@ -115,8 +115,8 @@ Associação N:N entre profissional e especialidade, com data.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_profissional` | int unsigned | Não | Sem padrão | Identificador de profissional. |
-| `id_especialidade` | int unsigned | Não | Sem padrão | Identificador de especialidade. |
+| `id_profissional` | int unsigned | Não | Sem padrão | Identificador do profissional. |
+| `id_especialidade` | int unsigned | Não | Sem padrão | Identificador da especialidade. |
 | `data_habilitacao` | date | Não | Sem padrão | Data em que o profissional obteve habilitação na especialidade. |
 
 **Chaves e restrições**
@@ -133,13 +133,13 @@ Plano de atendimento vinculado a paciente, responsável e especialidade.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_tratamento` | int unsigned | Não | AUTO_INCREMENT | Identificador de tratamento. |
+| `id_tratamento` | int unsigned | Não | AUTO_INCREMENT | Identificador do tratamento. |
 | `descricao_condicao` | varchar(255) | Não | Sem padrão | Condição ou objetivo terapêutico do tratamento. |
 | `data_inicio` | date | Não | Sem padrão | Início do tratamento; obrigatório. |
 | `data_alta` | date | Sim | NULL | Alta do tratamento; NULL indica aberto; não anterior ao início. |
-| `id_paciente` | int unsigned | Não | Sem padrão | Identificador de paciente. |
-| `id_fisioterapeuta` | int unsigned | Não | Sem padrão | Identificador de fisioterapeuta. |
-| `id_especialidade` | int unsigned | Não | Sem padrão | Identificador de especialidade. |
+| `id_paciente` | int unsigned | Não | Sem padrão | Identificador do paciente. |
+| `id_fisioterapeuta` | int unsigned | Não | Sem padrão | Identificador do fisioterapeuta responsável. |
+| `id_especialidade` | int unsigned | Não | Sem padrão | Identificador da especialidade. |
 | `id_especialidade_em_andamento` | int unsigned | Sim | Gerada STORED; ver expressão abaixo | Campo gerado: especialidade se alta é NULL; caso contrário NULL. Não preencher manualmente. |
 
 **Chaves e restrições**
@@ -161,7 +161,7 @@ Local físico; a capacidade é descritiva e não controla concorrência de agend
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_sala` | int unsigned | Não | AUTO_INCREMENT | Identificador de sala. |
+| `id_sala` | int unsigned | Não | AUTO_INCREMENT | Identificador da sala. |
 | `codigo` | varchar(30) | Não | Sem padrão | Código único de identificação da sala. |
 | `capacidade` | int unsigned | Não | Sem padrão | Capacidade declarada positiva; não calcula ocupação. |
 
@@ -177,11 +177,11 @@ Atendimento identificado dentro de um tratamento.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador de tratamento. |
+| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador do tratamento. |
 | `numero_sessao` | int unsigned | Não | Sem padrão | Número positivo dentro do tratamento. Não há garantia de sequência sem lacunas. |
-| `data_hora` | datetime | Não | Sem padrão | Data/hora da sessão ou do evento de auditoria; DATETIME sem fuso armazenado. |
-| `situacao` | enum('AGENDADA','REALIZADA','CANCELADA','FALTA') | Não | AGENDADA | Estado cadastral ou da sessão conforme os valores ENUM declarados. |
-| `id_sala` | int unsigned | Não | Sem padrão | Identificador de sala. |
+| `data_hora` | datetime | Não | Sem padrão | Data e horário da sessão; sem fuso armazenado. |
+| `situacao` | enum('AGENDADA','REALIZADA','CANCELADA','FALTA') | Não | AGENDADA | Situação da sessão. |
+| `id_sala` | int unsigned | Não | Sem padrão | Identificador da sala. |
 
 **Chaves e restrições**
 
@@ -199,7 +199,7 @@ Registro de conduta e resposta de uma sessão realizada.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador de tratamento. |
+| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador do tratamento. |
 | `numero_sessao` | int unsigned | Não | Sem padrão | Número positivo dentro do tratamento. Não há garantia de sequência sem lacunas. |
 | `conduta_aplicada` | text | Não | Sem padrão | Texto da conduta da sessão realizada. |
 | `resposta_observada` | text | Não | Sem padrão | Texto da resposta observada na sessão. |
@@ -215,8 +215,8 @@ Catálogo de exercícios terapêuticos.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_exercicio` | int unsigned | Não | AUTO_INCREMENT | Identificador de exercicio. |
-| `nome` | varchar(100) | Não | Sem padrão | Nome de cadastro. NOT NULL não impede texto vazio. |
+| `id_exercicio` | int unsigned | Não | AUTO_INCREMENT | Identificador do exercício. |
+| `nome` | varchar(100) | Não | Sem padrão | Nome usado no cadastro. |
 | `regiao_corpo` | varchar(100) | Não | Sem padrão | Região corporal trabalhada pelo exercício. |
 | `descricao` | text | Sim | NULL | Descrição livre opcional do catálogo. |
 
@@ -231,12 +231,12 @@ Exercício aplicado em sessão, com parâmetros de execução.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador de tratamento. |
+| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador do tratamento. |
 | `numero_sessao` | int unsigned | Não | Sem padrão | Número positivo dentro do tratamento. Não há garantia de sequência sem lacunas. |
-| `id_exercicio` | int unsigned | Não | Sem padrão | Identificador de exercicio. |
+| `id_exercicio` | int unsigned | Não | Sem padrão | Identificador do exercício. |
 | `series` | int unsigned | Não | Sem padrão | Quantidade positiva de séries. |
 | `repeticoes` | int unsigned | Não | Sem padrão | Quantidade positiva de repetições por série. |
-| `carga` | decimal(8,2) | Sim | NULL | Carga numérica não negativa ou NULL. Unidade não definida no esquema; confirmar com a equipe. |
+| `carga` | decimal(8,2) | Sim | NULL | Carga não negativa ou NULL. A unidade não está definida no esquema. |
 
 **Chaves e restrições**
 
@@ -255,12 +255,12 @@ Histórico de avaliações por paciente e data.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_avaliacao` | int unsigned | Não | AUTO_INCREMENT | Identificador de avaliacao. |
+| `id_avaliacao` | int unsigned | Não | AUTO_INCREMENT | Identificador da avaliação. |
 | `data_avaliacao` | date | Não | Sem padrão | Data da avaliação; única por paciente. |
 | `nivel_dor` | tinyint unsigned | Não | Sem padrão | Inteiro de 0 a 10, conforme CHECK. |
 | `amplitude_movimento` | varchar(100) | Sim | NULL | Descrição textual até 100 caracteres; unidade/padrão clínico não definido. |
 | `observacoes` | text | Sim | NULL | Observações livres opcionais. |
-| `id_paciente` | int unsigned | Não | Sem padrão | Identificador de paciente. |
+| `id_paciente` | int unsigned | Não | Sem padrão | Identificador do paciente. |
 
 **Chaves e restrições**
 
@@ -277,16 +277,16 @@ Registro técnico de alterações/exclusões de evolução; etapa 2.
 
 | Coluna | Tipo físico | NULL? | Padrão/geração | Significado |
 | --- | --- | --- | --- | --- |
-| `id_auditoria` | int unsigned | Não | AUTO_INCREMENT | Identificador de auditoria. |
-| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador de tratamento. |
+| `id_auditoria` | int unsigned | Não | AUTO_INCREMENT | Identificador do registro de auditoria. |
+| `id_tratamento` | int unsigned | Não | Sem padrão | Identificador do tratamento. |
 | `numero_sessao` | int unsigned | Não | Sem padrão | Número da sessão de origem, copiado pelo gatilho; sem FK ou CHECK nesta tabela. |
 | `acao` | varchar(10) | Não | Sem padrão | Gatilhos registram UPDATE, DELETE ou DEL_CASC. VARCHAR sem CHECK de domínio. |
 | `conduta_anterior` | text | Sim | NULL | Conduta antes da alteração/exclusão. |
 | `conduta_nova` | text | Sim | NULL | Conduta após UPDATE; NULL na exclusão. |
 | `resposta_anterior` | text | Sim | NULL | Resposta antes da alteração/exclusão. |
 | `resposta_nova` | text | Sim | NULL | Resposta após UPDATE; NULL na exclusão. |
-| `usuario_db` | varchar(288) | Não | Sem padrão | Usuário e host da conexão, obtidos por USER(); até 288 caracteres. |
-| `data_hora` | datetime | Não | Sem padrão | Data/hora da sessão ou do evento de auditoria; DATETIME sem fuso armazenado. |
+| `usuario_db` | varchar(288) | Não | Sem padrão | Usuário e host da conexão, obtidos por USER(). |
+| `data_hora` | datetime | Não | Sem padrão | Data e horário da alteração ou exclusão; sem fuso armazenado. |
 
 **Chaves e restrições**
 

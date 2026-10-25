@@ -28,6 +28,18 @@ for table,metadata in schema.items():
     expected=[c['COLUMN_NAME'] for c in metadata['colunas']]
     check('Colunas completas e em ordem: '+table,documented.get(table)==expected,f'{len(expected)} colunas')
 
+for part in re.split(r'^## \d+\. ',text,flags=re.M)[1:]:
+    table,body=part.split('\n',1)
+    entries=[[x.strip() for x in line.strip('|').split('|')] for line in body.splitlines() if line.startswith('| `')]
+    expected=[(c['COLUMN_NAME'],c['COLUMN_TYPE'],'Sim' if c['IS_NULLABLE']=='YES' else 'Não') for c in schema[table]['colunas']]
+    actual=[(row[0].strip('`'),row[1],row[2]) for row in entries]
+    check('Tipos e nulabilidade: '+table,actual==expected)
+
+report_text=(ROOT/'docs/fontes/relatorio.md').read_text(encoding='utf-8')
+total=sum(t['linhas'] for name,t in evidence['carga'].items() if name!='auditoria_evolucao')
+stated_total=re.search(r'A carga contém ([\d.]+) linhas',report_text)
+check('Total de registros no relatório',bool(stated_total) and int(stated_total[1].replace('.',''))==total,f'{total} linhas nas tabelas de domínio')
+
 broken=[]
 for path in [ROOT/'README.md',*list((ROOT/'docs').rglob('*.md'))]:
     for label,target in re.findall(r'\[([^]]+)\]\(([^)]+)\)',path.read_text(encoding='utf-8')):

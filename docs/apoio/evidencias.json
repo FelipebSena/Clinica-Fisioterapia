@@ -1962,6 +1962,86 @@
         "detalhe": "8 colunas"
       },
       {
+        "verificacao": "Tipos e nulabilidade: convenio",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: paciente",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: profissional",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: fisioterapeuta",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: estagiario",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: especialidade",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: habilitacao_profissional",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: tratamento",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: sala",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: sessao",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: evolucao",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: exercicio",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: aplicacao_exercicio",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: avaliacao_fisica",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Tipos e nulabilidade: auditoria_evolucao",
+        "resultado": "PASSOU",
+        "detalhe": ""
+      },
+      {
+        "verificacao": "Total de registros no relatório",
+        "resultado": "PASSOU",
+        "detalhe": "1186 linhas nas tabelas de domínio"
+      },
+      {
         "verificacao": "Links locais resolvem",
         "resultado": "PASSOU",
         "detalhe": ""
@@ -2028,7 +2108,7 @@
       }
     ],
     "resumo": {
-      "passaram": 29,
+      "passaram": 45,
       "falharam": 0
     }
   }
