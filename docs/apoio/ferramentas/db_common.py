@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import pymysql
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def connect(database=None, user=None, password=None):

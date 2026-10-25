@@ -24,7 +24,7 @@ args = parser.parse_args()
 if not args.confirmar_base_descartavel:
     parser.error('Use somente em servidor descartável e informe --confirmar-base-descartavel.')
 
-out = ROOT / 'docs/evidencias'
+out = ROOT / 'docs/apoio'
 out.mkdir(parents=True, exist_ok=True)
 results = []
 c = connect()
@@ -197,9 +197,6 @@ try:
             cur.execute('SHOW CREATE TABLE `' + table + '`')
             ddl = cur.fetchone()['Create Table']
             schema[table] = {'colunas': columns, 'ddl': ddl}
-    (out/'catalogo.json').write_text(json.dumps(schema, ensure_ascii=False, indent=2, default=str)+'\n', encoding='utf-8')
-    (out/'explain.json').write_text(json.dumps({'antes': before, 'depois': after}, ensure_ascii=False, indent=2, default=str)+'\n', encoding='utf-8')
-    (out/'carga.json').write_text(json.dumps(initial, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 
     # Round-trip real de dump, incluindo views e gatilhos, na mesma base descartável.
     mysql_bin = Path(os.environ.get('MYSQL_BIN', ''))
@@ -229,6 +226,8 @@ finally:
         'arquivos_sha256': {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in (ROOT/'SQL').glob('etapa*.sql')},
         'testes': results, 'backup': locals().get('backup'),
         'resumo': {'passaram': sum(r['resultado']=='PASSOU' for r in results), 'falharam': sum(r['resultado']=='FALHOU' for r in results)}}
-    (out/'validacao.json').write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str)+'\n', encoding='utf-8')
+    evidence = {'catalogo': locals().get('schema'), 'carga': locals().get('initial'),
+        'explain': {'antes': locals().get('before'), 'depois': locals().get('after')}, 'validacao': report}
+    (out/'evidencias.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2, default=str)+'\n', encoding='utf-8')
     c.close()
     print(json.dumps(report['resumo'], ensure_ascii=False))
